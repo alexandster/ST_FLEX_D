@@ -12,7 +12,8 @@ settings.init()
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #read parameters
-pFile = open('files/parameterFile.txt', "r")
+# pFile = open('files/parameterFile.txt', "r")
+pFile = open('files/parameterFile_data.txt', "r")
 pFile.readline()
 pList = pFile.readline().split("\t")
 
@@ -34,53 +35,28 @@ if not os.path.exists(settings.dir2):
     os.makedirs(settings.dir2)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#keeps track of the number of cut circles for each candidate split
-# settings.cList = [0,0,0,0,0]
-#stores the number of times each candidate split was chosen
-# settings.pList = [0,0,0,0,0]
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#read input point file
+# pFile = open('files/AllCases2010_11_clip.txt', "r")
+pFile = open('files/data.txt', "r")
+inX, inY, inT = [], [], []
+r = pFile.readline().split(",")
+xmin, xmax, ymin, ymax, tmin, tmax = float(r[0]), float(r[1]), float(r[2]), float(r[3]), float(r[4]), float(r[5].strip())
 
-#for each candidate split, store average number of cut circles for each candidate split
-out1, out2, out3, out4, out5 = [],[],[],[],[]
+for record in pFile:
+	inX.append(float(record.split(",")[0]))
+	inY.append(float(record.split(",")[1]))
+	inT.append(float(record.split(",")[2]))
+pFile.close()
+
+#keeps track how many circles were cut for each candidate split
+settings.cList = [0,0,0,0,0]
+
+decompose.decomp(inX, inY, inT, xmin, xmax, ymin, ymax, tmin, tmax, 0)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#more parameters
-numIt = 2       #number of iterations (randomness)
-numPts = 1000      #number of data points
-minXY = 0            #min of spatial range
-maxXY = 1000         #max of spatial range
-minT = 0            #min of temporal range
-maxT = 365         #max of temporal range
-#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#decompose a number of times (numIt). Because random datasets are created.
-i = 0
-while i < numIt:
-
-    #keeps track how many circles were cut for each candidate split
-    settings.cList = [0,0,0,0,0]
-
-    #create random numbers
-    inX  = []
-    inY = []
-    inT = []
-
-    count = 0
-    while count < numPts:
-        inX.append(random.uniform(minXY, maxXY))
-        inY.append(random.uniform(minXY, maxXY))
-        inT.append(random.randint(minT, maxT))
-        count += 1
-
-    xmin, xmax = 0, 1000
-    decompose.decomp(inX, inY, inT, minXY, maxXY, minXY, maxXY, minT, maxT, 0)
-
-    out1.append(settings.cList[0] / numIt)
-    out2.append(settings.cList[1] / numIt)
-    out3.append(settings.cList[2] / numIt)
-    out4.append(settings.cList[3] / numIt)
-    out5.append(settings.cList[4] / numIt)
-
-    i += 1
-#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-print(sum(out1),sum(out2),sum(out3),sum(out4),sum(out5))
+#print stuff
+#print(sum(out1),sum(out2),sum(out3),sum(out4),sum(out5))
 print(settings.pList)
+print(settings.sdNum)
+print(settings.cList)
